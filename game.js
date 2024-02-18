@@ -4,11 +4,13 @@ const CORNER = {
 	y: canvas.height * 0.4
 };
 
-console.log(CORNER);
-
 let cube = new Cube();
 
+cube.U();
+
 const drawCube = () => {
+	let grid = cube.getGridCube();
+
 	// background
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -34,8 +36,8 @@ const drawCube = () => {
 			for (let x = 0; x < 3; x++) {
 				let cx = CORNER.x + x * WIDTH + 3 * i * WIDTH + tx;
 				ctx.strokeRect(cx, cy, WIDTH, WIDTH);
-
-				ctx.fillStyle = colors[i];
+				console.log(colors[grid[i][y][x]]);
+				ctx.fillStyle = colors[grid[i][y][x]];
 				ctx.fillRect(cx + 1, cy + 1, WIDTH - 2, WIDTH - 2);
 			}
 		}

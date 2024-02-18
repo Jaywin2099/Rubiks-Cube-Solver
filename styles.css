@@ -1,0 +1,49 @@
+* {
+	margin: 0;
+	box-sizing: border-box;
+}
+
+#wrapper {
+	width: 100%; /* full width while less than 1280px */ 
+	max-width: 1280px;
+	margin: auto;
+	display: flex;
+	flex-flow: row;
+	overflow: hidden;
+}
+
+#dataContainer {
+	height: 100%;
+	width: 20%;
+	padding: 5px;
+	padding: 15px;
+}
+
+#dataForm {
+	max-width: 200px;
+	display: grid;
+	margin: 5px;
+}
+
+#dataForm > * {
+	margin-top: 5px;
+	width: 100%;
+}
+
+#otherDataButtons {
+	width: 100%;
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+	justify-content: space-around;
+	margin-top: -5px;
+}
+
+#otherDataButtons > * {
+	margin-top: 5px;
+}
+
+#stage {
+	width: 80%;
+	height: 100vh;
+}

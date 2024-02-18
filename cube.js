@@ -21,7 +21,7 @@ class CircularArray {
 		this.startIndex = i;
 	}
 
-	offSetZeroIndex(offset) {
+	offsetZeroIndex(offset) {
 		this.checkRangeError(this.startIndex + offset);
 
 		this.startIndex += offset;
@@ -59,7 +59,7 @@ class Cube {
 
 		// make object with descriptive names
 		this.orientations = [
-			{ order: [], startIndex: [] }, // 0 = up
+			{ order: [0,1,2,3,4,5], startIndex: [0,0,0,0,0,NaN] }, // 0 = up
 			{ order: [], startIndex: [] }, // 1 = front
 			{ order: [], startIndex: [] }, // 2 = right
 			{ order: [], startIndex: [] }, // 3 = back
@@ -76,7 +76,7 @@ class Cube {
 		let { order, startIndex } = this.orientations[this.orientation];
 
 		// rotates the top face
-		this.cube[order[0]].offSetZeroIndex(-2);
+		this.cube[order[0]].offsetZeroIndex(-2);
 		/* literally: offsets the zero index of a circular array by two
 		if you think of the elements in the array as digits 0-7, it accomplishes this:
 			
@@ -87,20 +87,63 @@ class Cube {
 		which is practically the same as a clockwise face movement
 		*/
 
-
-		// rotates the first 3 tiles for the 4 side faces clockwise
-		for (let i = 1; i <= 5; i++) {
+		
+		/*
+		for (let i = 1; i <= 4; i++) {
 			let face = order[i];
+			let topRow = new CircularArray(12);
 
-			// gets the top rows
-			let topRow = [];
+			// gets the top row colors
 			for (let j = 0; j < 3; j++) {
-				this.cube[ face ].get( j, startIndex[i] );
+				topRow.push(this.cube[ face ].get( j, startIndex[i] ).color);
 			}
+		}*/
+
+		// rotates the first 3 tiles for the 4 sides' faces clockwise
+		for (let i = 0; i < 3; i++) {
+			let prev = -1;
+			
+			for (let j = 4; j >= 1; j--) {
+				// gets the first piece in the face's top row
+				let piece = this.cube[ order[j] ].get( i, startIndex[j] );
+
+				// keeps its color
+				let next = piece.color;
+
+				// the piece's color is replaced with the previous piece's color
+				piece.color = prev;
+
+				prev = next; // remembers old color for next
+			}
+
+			// the last piece's color replaces the first's
+			this.cube[ order[4] ].get( i, startIndex[4] ).color = prev;
 		}
 	}
 
-	Uprime() {}
+	Uprime() {
+
+
+		for (let i = 0; i < 3; i++) {
+			let prev = -1;
+			
+			for (let j = 1; j <= 4; j++) {
+				// gets the first piece in the face's top row
+				let piece = this.cube[ order[j] ].get( i, startIndex[j] );
+
+				// keeps its color
+				let next = piece.color;
+
+				// the piece's color is replaced with the previous piece's color
+				piece.color = prev;
+
+				prev = next; // remembers old color for next
+			}
+
+			// the last piece's color replaces the first's
+			this.cube[ order[1] ].get( i, startIndex[1] ).color = prev;
+		}
+	}
 
 	getCube() {
 		return this.getGridCube();
@@ -150,9 +193,9 @@ class Cube {
 		// this is shit
 		for (let i = 0; i < 6; i++) {
 			faces.push([
-				[this.cube[i][0].color, this.cube[i][1].color, this.cube[i][2].color],
-				[this.cube[i][7].color, i, this.cube[i][3].color],
-				[this.cube[i][6].color, this.cube[i][5].color, this.cube[i][4].color]
+				[this.cube[i].get(0).color, this.cube[i].get(1).color, this.cube[i].get(2).color],
+				[this.cube[i].get(7).color, i, this.cube[i].get(3).color],
+				[this.cube[i].get(6).color, this.cube[i].get(5).color, this.cube[i].get(4).color]
 			]);
 		}
 
@@ -174,3 +217,9 @@ class Cube {
 let test = new Cube();
 
 console.log(test.isSolved());
+
+console.log(test.getCube());
+
+test.U()
+
+console.log(test.getCube());

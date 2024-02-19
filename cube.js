@@ -12,24 +12,28 @@ class CircularArray {
 	}
 
 	checkRangeError(i) {
-		if (i <= -1 * this.length || i >= this.length) throw RangeError('index out of range');
+		if (i <= -1 * this.length) {
+			return i + this.length;
+		} else if (i >= this.length) {
+			return i - this.length;
+		}
 	}
 
 	setZeroIndex(i) {
-		this.checkRangeError(i);
-
 		this.startIndex = i;
 	}
 
 	offsetZeroIndex(offset) {
-		this.checkRangeError(this.startIndex + offset);
-
 		this.startIndex += offset;
+
+		if (this.startIndex >= this.length) {
+			this.startIndex -= this.length;
+		} else if (this.startIndex <= this.length) {
+			this.startIndex += this.length;
+		}
 	}
 
 	get(i, startIndex = 0) {
-		this.checkRangeError(i);
-
 		return this.data[(((i + startIndex + this.startIndex) % this.length) + this.length) % this.length];
 	}
 
@@ -37,10 +41,11 @@ class CircularArray {
 		return this.data.push(data);
 	}
 }
-
 class Cube {
 	constructor() {
 		this.cube = [];
+
+		this.MOVES = ['u', 'f', 'r', 'b', 'l', 'd'];
 
 		// creates 6 circular arrays that prepresent each face
 		for (let i = 0; i < 6; i++) this.cube.push(new CircularArray(8));
@@ -59,13 +64,32 @@ class Cube {
 
 		// make object with descriptive names
 		this.orientations = [
-			{ order: [0,1,2,3,4,5], startIndex: [0,0,0,0,0,NaN] }, // 0 = up
-			{ order: [], startIndex: [] }, // 1 = front
-			{ order: [], startIndex: [] }, // 2 = right
-			{ order: [], startIndex: [] }, // 3 = back
-			{ order: [], startIndex: [] }, // 4 = left
-			{ order: [], startIndex: [] } // 5 = down
+			{ order: [0, 1, 2, 3, 4], startIndex: [0, 0, 0, 0, 0] }, // 0 = u
+			{ order: [1, 5, 2, 0, 4], startIndex: [0, 0, 6, 4, 2] }, // 1 = f
+			{ order: [2, 1, 5, 3, 0], startIndex: [2, 2, 2, 6, 2] }, // 2 = r
+			{ order: [3, 0, 2, 5, 4], startIndex: [4, 2, 2, 4, 6] }, // 3 = b
+			{ order: [4, 0, 3, 5, 1], startIndex: [4, 6, 2, 6, 6] }, // 4 = l
+			{ order: [5, 4, 3, 2, 1], startIndex: [2, 4, 4, 4, 4] } // 5 = d
 		];
+	}
+
+	scramble(numMoves = 21) {
+		// picks numMoves random moves and takes them
+		for (let i = 0; i < numMoves; i++) {
+			this.takeRandomMove();
+		}
+	}
+
+	addMoves(moves) {
+		this.nextMoves = moves.split(' ');
+	}
+
+	step() {
+		if (this.nextMoves.length > 0) {
+			this.move(this.nextMoves.shift());
+		} else {
+			console.log('tried to step but failed...');
+		}
 	}
 
 	setOrientation(orientation) {
@@ -87,25 +111,13 @@ class Cube {
 		which is practically the same as a clockwise face movement
 		*/
 
-		
-		/*
-		for (let i = 1; i <= 4; i++) {
-			let face = order[i];
-			let topRow = new CircularArray(12);
-
-			// gets the top row colors
-			for (let j = 0; j < 3; j++) {
-				topRow.push(this.cube[ face ].get( j, startIndex[i] ).color);
-			}
-		}*/
-
 		// rotates the first 3 tiles for the 4 sides' faces clockwise
 		for (let i = 0; i < 3; i++) {
 			let prev = -1;
-			
+
 			for (let j = 4; j >= 1; j--) {
 				// gets the first piece in the face's top row
-				let piece = this.cube[ order[j] ].get( i, startIndex[j] );
+				let piece = this.cube[order[j]].get(i, startIndex[j]);
 
 				// keeps its color
 				let next = piece.color;
@@ -117,19 +129,22 @@ class Cube {
 			}
 
 			// the last piece's color replaces the first's
-			this.cube[ order[4] ].get( i, startIndex[4] ).color = prev;
+			this.cube[order[4]].get(i, startIndex[4]).color = prev;
 		}
 	}
 
 	Uprime() {
+		let { order, startIndex } = this.orientations[this.orientation];
 
+		// rotates the top face
+		this.cube[order[0]].offsetZeroIndex(2);
 
 		for (let i = 0; i < 3; i++) {
 			let prev = -1;
-			
+
 			for (let j = 1; j <= 4; j++) {
 				// gets the first piece in the face's top row
-				let piece = this.cube[ order[j] ].get( i, startIndex[j] );
+				let piece = this.cube[order[j]].get(i, startIndex[j]);
 
 				// keeps its color
 				let next = piece.color;
@@ -141,7 +156,7 @@ class Cube {
 			}
 
 			// the last piece's color replaces the first's
-			this.cube[ order[1] ].get( i, startIndex[1] ).color = prev;
+			this.cube[order[1]].get(i, startIndex[1]).color = prev;
 		}
 	}
 
@@ -155,36 +170,11 @@ class Cube {
 	 * @param {String} movement
 	 */
 	move(movement) {
-		switch (movement.lower()) {
-			case 'u':
-				break;
+		this.orientation = this.MOVES.indexOf(movement[0].toLowerCase());
 
-			case 'f':
-				break;
+		if (this.orientation > 5 || this.orientation < 0) throw RangeError('Orientation out of range.');
 
-			case 'r':
-				break;
-
-			case 'l':
-				break;
-
-			case 'b':
-				break;
-
-			case 'd':
-				break;
-		}
-	}
-
-	turnSide(side) {
-		let cube = this.orientCube(side);
-
-		this.U(cube);
-
-		// idea: maybe use circular arrays of rows and columns and faces, and change the index of the start to simulate a turn.
-		//
-
-		this.cube = cube;
+		movement.includes("'") ? this.Uprime() : this.U();
 	}
 
 	getGridCube() {
@@ -212,14 +202,13 @@ class Cube {
 
 		return true;
 	}
+
+	generateRandomMove() {
+		let prime = Math.random() > 0.5 ? "'" : '';
+		return this.MOVES[Math.floor(Math.random() * 6)] + prime;
+	}
+
+	takeRandomMove() {
+		this.move(this.generateRandomMove());
+	}
 }
-
-let test = new Cube();
-
-console.log(test.isSolved());
-
-console.log(test.getCube());
-
-test.U()
-
-console.log(test.getCube());

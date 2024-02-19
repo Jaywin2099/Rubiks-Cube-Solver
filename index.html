@@ -1,64 +1,42 @@
 <!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8'>
-    <title>rubiks cube solver</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-    <div id='wrapper'>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>rubiks cube solver</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<!-- form containter -->
+			<div id="dataContainer">
+				<h2>Rubiks cube solver</h2>
 
-        <!-- form containter -->
-        <div id='dataContainer'>
-            <h2>Rubiks cube solver</h2>
+				<form id="dataForm" method="post">
+					<label for="type">Type:</label>
+					<select id="type" name="type">
+						<option value="random" selected>dfs</option>
+					</select>
 
-            <form id='dataForm' method='post'>
-                <label for='type'>Type:</label>
-                <select id='type' name='type'>
-                    <option value='random' selected>dfs</option>
-                </select>
+					<label for="tickTime">Tick (ms):</label>
+					<input id="tickTime" name="tickTime" type="number" value="500" min="1" />
 
-                <label for='tickTime'>Tick (ms):</label>
-                <input id='tickTime' name='tickTime' type='number' value='1' min='1'>
+					<button type="submit" id="dataSubmit">Solve</button>
+				</form>
+				<div id="otherDataButtons">
+					<button id="pause">Pause</button>
+					<button id='step'>Step</button>
+				</div>
+			</div>
 
-                <button type='submit' id='dataSubmit'>Solve</button>
-            </form>
-            <div id='otherDataButtons'>
-            </div>
-        </div>
-
-        <!-- canvas container-->
-        <div id='stage'>
-            <canvas id='myCanvas'></canvas>
-        </div>
-    </div>
-    <script>
-
-//form
-var dataForm = document.getElementById('dataForm');
-
-//form data elements
-var type = document.getElementById('type');
-var tickTime = document.getElementById('tickTime');
-
-
-//form on submit
-const onSolve = (e) => {
-    if (e) e.preventDefault();
-
-    //every one second this code is repeated
-    phase = setInterval(() => {
-        
-    }, parseInt(tickTime.value));
-}
-
-dataForm.addEventListener('submit', onSolve);
-
-    </script>
-    <script src="./index.js"></script>
-    <script src="./search.js"></script>
-    <script src="./cube.js"></script>
-    <script src="./game.js"></script>
-</body>
+			<!-- canvas container-->
+			<div id="stage">
+				<canvas id="myCanvas"></canvas>
+			</div>
+		</div>
+		<script src="./index.js"></script>
+		<script src="./search.js"></script>
+		<script src="./cube.js"></script>
+		<script src="./game.js"></script>
+	</body>
 </html>

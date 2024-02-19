@@ -32,14 +32,14 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 
 		// checks if that node is the solved state
 		if (Cube.isSolved(faces)) {
-			console.log('nodes expanded: ', nodesExpanded);
+			solveInfo.innerHTML = 'nodes expanded: ' + nodesExpanded.toString() + '<br>';
 			return path.join(' ');
 		} else {
 			let successors = getSuccessors(faces, path[path.length - 1]);
 			/*successors = successors.filter(el => {
 				for (let visitedFace of visited) !Cube.equals(visitedFace, el);
 			})*/
-			
+
 			for (let i = 0; i < successors.length; i++) {
 				let newPath = [...path];
 				newPath.push(successors[i][1]);

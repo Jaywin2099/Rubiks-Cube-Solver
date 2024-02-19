@@ -61,9 +61,21 @@ class Cube {
 	];
 
 	constructor() {
-		this.faces = [];
 		this.nextMoves = [];
 		this.numMovesTaken = 0;
+
+		this.solve();		
+	}
+
+	scramble(numMoves = 21) {
+		// picks numMoves random moves and takes them
+		for (let i = 0; i < numMoves; i++) {
+			this.takeRandomMove();
+		}
+	}
+
+	solve() {
+		this.faces = [];
 
 		// creates 6 circular arrays that prepresent each face
 		for (let i = 0; i < 6; i++) this.faces.push(new CircularArray(8));
@@ -75,13 +87,6 @@ class Cube {
 			let face = Math.floor(i / 8);
 
 			this.faces[face].push(face);
-		}
-	}
-
-	scramble(numMoves = 21) {
-		// picks numMoves random moves and takes them
-		for (let i = 0; i < numMoves; i++) {
-			this.takeRandomMove();
 		}
 	}
 
@@ -179,6 +184,10 @@ class Cube {
 		for (let i = 0; i < 6; i++) newFaces.push(faces[i].copy());
 
 		return newFaces;
+	}
+
+	copyFaces() {
+		return Cube.copyFaces(this.faces);
 	}
 
 	/**

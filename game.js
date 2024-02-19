@@ -1,18 +1,23 @@
 const cube = new Cube();
 
-cube.addMoves('R', true);
-
 drawCube(cube.getGridCube());
 
 //form on submit
 const onSolve = e => {
 	if (e) e.preventDefault();
 	let path = 0;
-	
+	let startTime = Date.now();
+
 	if (type.value == 'bfs') path = breadthFirstSearch(cube.faces);
+
+	let elapsedTime = (Date.now() - startTime) / 1000;
+
+	solveInfo.innerHTML += elapsedTime.toString() + ' seconds to find solution';
 
 	if (path) {
 		cube.addMoves(path);
+
+		solveInfo.innerHTML += '<br><br>path: ' + path.toUpperCase();
 
 		INTERVAL = setInterval(() => {
 			// steps
@@ -38,6 +43,13 @@ const onStep = () => {
 	drawCube(cube.getGridCube());
 };
 
+const onScramble = () => {
+	cube.solve();
+	cube.scramble(parseInt(scrambleDepth.value));
+	drawCube(cube.getGridCube());
+};
+
 dataForm.addEventListener('submit', onSolve);
 pauseButton.addEventListener('click', onPause);
 stepButton.addEventListener('click', onStep);
+scrambleButton.addEventListener('click', onScramble);

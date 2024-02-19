@@ -12,6 +12,10 @@
 	overflow: hidden;
 }
 
+#solveInfo {
+	margin: 20px 0;
+}
+
 #dataContainer {
 	height: 100%;
 	width: 20%;

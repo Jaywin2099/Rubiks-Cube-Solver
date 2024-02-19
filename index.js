@@ -4,6 +4,9 @@ var type = document.getElementById('type');
 var tickTime = document.getElementById('tickTime');
 var pauseButton = document.getElementById("pause");
 var stepButton = document.getElementById("step");
+var scrambleDepth = document.getElementById("scrambleDepth");
+var scrambleButton = document.getElementById("scramble");
+var solveInfo = document.getElementById("solveInfo");
 
 //initializes global elements
 var stage = document.getElementById('stage');

@@ -49,11 +49,20 @@ class CircularArray {
 }
 class Cube {
 	static MOVES = ['u', 'f', 'r', 'b', 'l', 'd', 'u2', 'f2', 'r2', 'b2', 'l2', 'd2', "u'", "f'", "r'", "b'", "l'", "d'"];
+	
+	// make object with descriptive names
+	static orientations = [
+		{ order: [0, 1, 2, 3, 4], startIndex: [0, 0, 0, 0, 0] }, // 0 = u
+		{ order: [1, 5, 2, 0, 4], startIndex: [0, 0, 6, 4, 2] }, // 1 = f
+		{ order: [2, 1, 5, 3, 0], startIndex: [2, 2, 2, 6, 2] }, // 2 = r
+		{ order: [3, 0, 2, 5, 4], startIndex: [4, 0, 2, 4, 6] }, // 3 = b
+		{ order: [4, 0, 3, 5, 1], startIndex: [4, 6, 2, 6, 6] }, // 4 = l
+		{ order: [5, 4, 3, 2, 1], startIndex: [2, 4, 4, 4, 4] } // 5 = d
+	];
 
 	constructor() {
 		this.faces = [];
 		this.nextMoves = [];
-
 		this.numMovesTaken = 0;
 
 		// creates 6 circular arrays that prepresent each face
@@ -67,16 +76,6 @@ class Cube {
 
 			this.faces[face].push(face);
 		}
-
-		// make object with descriptive names
-		this.orientations = [
-			{ order: [0, 1, 2, 3, 4], startIndex: [0, 0, 0, 0, 0] }, // 0 = u
-			{ order: [1, 5, 2, 0, 4], startIndex: [0, 0, 6, 4, 2] }, // 1 = f
-			{ order: [2, 1, 5, 3, 0], startIndex: [2, 2, 2, 6, 2] }, // 2 = r
-			{ order: [3, 0, 2, 5, 4], startIndex: [4, 0, 2, 4, 6] }, // 3 = b
-			{ order: [4, 0, 3, 5, 1], startIndex: [4, 6, 2, 6, 6] }, // 4 = l
-			{ order: [5, 4, 3, 2, 1], startIndex: [2, 4, 4, 4, 4] } // 5 = d
-		];
 	}
 
 	scramble(numMoves = 21) {
@@ -112,7 +111,7 @@ class Cube {
 		}
 	}
 
-	U(orientation, faces = this.faces) {
+	static U(orientation, faces) {
 		let { order, startIndex } = this.orientations[orientation];
 
 		// rotates the top face
@@ -144,9 +143,11 @@ class Cube {
 			// the last piece's color replaces the first's
 			faces[order[4]].set(i, prev, startIndex[4]);
 		}
+
+		return faces;
 	}
 
-	Uprime(orientation, faces = this.faces) {
+	static Uprime(orientation, faces) {
 		let { order, startIndex } = this.orientations[orientation];
 
 		// rotates the top face
@@ -168,69 +169,59 @@ class Cube {
 			// the last piece's color replaces the first's
 			faces[order[1]].set(i, prev, startIndex[1]);
 		}
-	}
-
-	getCube() {
-		return this.getGridCube();
-	}
-
-	copyFaces() {
-		let faces = [];
-
-		for (let i = 0; i < 6; i++) faces.push(this.faces[i].copy());
 
 		return faces;
 	}
 
-	equals(faces) {
-		if (this.faces[0].length !== faces[0].length) return false;
+	static copyFaces(faces) {
+		let newFaces = [];
 
-		for (let i = 0; i < 6; i++) {
-			for (let j = 0; j < this.faces[i].length; j++) {
-				if (faces[i].get(j) !== this.faces[i].get(j)) return false;
-			}
-		}
+		for (let i = 0; i < 6; i++) newFaces.push(faces[i].copy());
 
-		return true;
+		return newFaces;
 	}
 
 	/**
 	 * takes a move (u,f,r,l,d,b), orients the main cube so that the
 	 * desired side is on the top, then does a U or U'
-	 * @param {String} movement
-	 *
-	 * @returns {Array} return the array of colors that correspond to the cube
 	 */
-	move(movement, faces = this.faces) {
+	static move(movement, faces, returnCopy=true) {
+		// copies faces
+		if (returnCopy) faces = Cube.copyFaces(faces);
+
 		let orientation = Cube.MOVES.indexOf(movement[0].toLowerCase());
 
 		if (orientation > 5 || orientation < 0) throw RangeError('Orientation out of range.');
 
 		if (movement.includes("'")) {
-			return this.Uprime(orientation, faces);
+			return Cube.Uprime(orientation, faces);
 		} else if (movement.includes('2')) {
-			return this.U(orientation, this.U(orientation, faces));
+			return Cube.U(orientation, this.U(orientation, faces));
 		} else {
-			return this.U(orientation, faces);
+			return Cube.U(orientation, faces);
 		}
 	}
 
-	getGridCube(cube=this.faces) {
+	move(movement) {
+		return Cube.move(movement, this.faces, false);
+	}
+
+	getGridCube() {
 		let faces = [];
 
 		// this is shit
 		for (let i = 0; i < 6; i++) {
 			faces.push([
-				[cube[i].get(0), cube[i].get(1), cube[i].get(2)],
-				[cube[i].get(7), 		i, 		 cube[i].get(3)],
-				[cube[i].get(6), cube[i].get(5), cube[i].get(4)]
+				[this.faces[i].get(0), this.faces[i].get(1), this.faces[i].get(2)],
+				[this.faces[i].get(7), i, this.faces[i].get(3)],
+				[this.faces[i].get(6), this.faces[i].get(5), this.faces[i].get(4)]
 			]);
 		}
 
 		return faces;
 	}
 
-	isSolved(faces=this.faces) {
+	static isSolved(faces) {
 		for (let i = 0; i < 48; i++) {
 			let face = Math.floor(i / 8);
 
@@ -241,11 +232,29 @@ class Cube {
 		return true;
 	}
 
+	isSolved() {
+		return Cube.isSolved(this.faces);
+	}
+
 	generateRandomMove() {
 		return Cube.MOVES[Math.floor(Math.random() * Cube.MOVES.length)];
 	}
 
 	takeRandomMove() {
 		this.move(this.generateRandomMove());
+	}
+
+	static equals(faces1, faces2) {
+		// makes sure they are valid cubes 
+		if (faces1[0].length != faces2[0].length) return false;
+
+		// compares each face for each cube 
+		for (let i = 0; i < 6; i++) {
+			for (let j = 0; j < faces1[i].length; j++) {
+				if (faces1[i].get(j) != faces2[i].get(j)) return false;
+			}
+		}
+
+		return true;
 	}
 }

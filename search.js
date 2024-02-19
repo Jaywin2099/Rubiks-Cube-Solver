@@ -1,51 +1,62 @@
-const depthFirstSearch = (cube, heuristic = nullHeuristic) => {
+const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 	let visited = [];
 	let fringe = [];
 
+	let nodesExpanded = 0;
+
 	// format: [ state , path to state ]
-	fringe.push([cube.copyFaces(), []]);
+	fringe.push([initState, []]);
 
 	while (fringe.length > 0) {
 		// gets next node
 		let node = fringe.shift();
+		++nodesExpanded;
 
 		// copies faces and path
-		let faces = node[0].copyFaces(),
-			path = [...node[1]];
+		let faces = Cube.copyFaces(node[0]),
+			path = node[1]; // NOT A COPY
 
-		if (visited.includes(faces)) continue;
+		// makes sure state wasnt visited
+		/*
+		let cont = true;
+		for (let i = 0; i < visited.length; i++) {
+			if (Cube.equals(visited[i], faces)) {
+				cont = false;
+				break;
+			}
+		}
+		if (!cont) continue;*/
+
+		// adds state to visited states
 		visited.push(faces);
 
 		// checks if that node is the solved state
-		if (cube.isSolved(faces)) {
-			return nextMove[1];
+		if (Cube.isSolved(faces)) {
+			console.log('nodes expanded: ', nodesExpanded);
+			return path.join(' ');
 		} else {
-			let successors = getSuccessors(cube, faces, path[path.length - 1]);
-
-			console.log(successors);
-
-			for (let move of successors) {
-				console.log(move[1]);
-
-				// not searching anything because there's only 1 cube.
-
-				if (!visited.includes(move[0])) {
-					path.push(move[1]);
-					fringe.push([move[0], path]);
-				}
+			let successors = getSuccessors(faces, path[path.length - 1]);
+			/*successors = successors.filter(el => {
+				for (let visitedFace of visited) !Cube.equals(visitedFace, el);
+			})*/
+			
+			for (let i = 0; i < successors.length; i++) {
+				let newPath = [...path];
+				newPath.push(successors[i][1]);
+				fringe.push([successors[i][0], newPath]);
 			}
 		}
 	}
 };
 
-const getSuccessors = (cube, faces, lastMove) => {
-	lastMove = typeof lastMove == 'undefined' ? 'z' : lastMove[0];
+const getSuccessors = (faces, lastMove) => {
+	lastMove = typeof lastMove == 'undefined' ? '-' : lastMove[0];
 	let moves = Cube.MOVES.filter(e => !e.includes(lastMove));
-	
 	let successors = [];
 
-	for (let i of moves) {
-		successors.push([cube.move(i, faces), i]);
+	for (let i = 0; i < moves.length; i++) {
+		// Cube.move returns a copy of the state after acting on the move
+		successors.push([Cube.move(moves[i], faces), moves[i]]);
 	}
 
 	return successors;

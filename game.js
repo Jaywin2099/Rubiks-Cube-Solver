@@ -4,10 +4,7 @@ const CORNER = {
 	y: canvas.height * 0.4
 };
 
-const cube = new Cube();
-let circle;
-
-const drawCube = () => {
+const drawCube = cube => {
 	let grid = cube.getGridCube();
 
 	// background
@@ -41,7 +38,7 @@ const drawCube = () => {
 				//ctx.strokeRect(cx, cy, WIDTH, WIDTH);
 				ctx.fillStyle = colors[grid[i][y][x]];
 				if (x == 1 && y == 1) {
-					circle = new Path2D();
+					let circle = new Path2D();
 					circle.arc(cx + WIDTH / 2, cy + WIDTH / 2, WIDTH / 2 - 1, 0, 2 * Math.PI, false);
 					ctx.fill(circle);
 				} else {
@@ -52,32 +49,43 @@ const drawCube = () => {
 	}
 };
 
-let numMoves = 0;
+//cube.scramble();
+
+let tCube = new Cube();
+const cube = new Cube();
+
+tCube.addMoves('R u l', true);
+
+drawCube(tCube);
+
+console.log(depthFirstSearch(tCube));
 
 //form on submit
 const onSolve = e => {
 	if (e) e.preventDefault();
 
 	INTERVAL = setInterval(() => {
-		cube.addMoves(cube.generateRandomMove());
+		//cube.addMoves('u2');
 
-		cube.step();
+		//if (cube.length) cube.step();
+		//else console.log('no more moves');
 
-		drawCube();
+		// kills interval when solved
+		//if (cube.isSolved()) onPause();
+
+		drawCube(tCube);
 	}, tickTime.value);
 };
 
 const onPause = () => {
 	clearInterval(INTERVAL);
-}
+};
 
 const onStep = () => {
 	cube.step();
-	drawCube();
-}
-
+	drawCube(cube);
+};
 
 dataForm.addEventListener('submit', onSolve);
 pauseButton.addEventListener('click', onPause);
 stepButton.addEventListener('click', onStep);
-drawCube();

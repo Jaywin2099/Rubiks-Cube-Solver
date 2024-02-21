@@ -5,6 +5,9 @@ drawCube(cube.getGridCube());
 //form on submit
 const onSolve = e => {
 	if (e) e.preventDefault();
+	
+	drawCube(cube.getGridCube());
+
 	let path = 0;
 	let startTime = Date.now();
 
@@ -45,7 +48,8 @@ const onStep = () => {
 
 const onScramble = () => {
 	cube.solve();
-	cube.scramble(parseInt(scrambleDepth.value));
+	let scramble = cube.scramble(parseInt(scrambleDepth.value));
+	solveInfo.innerHTML = 'scramble: ' + scramble + '<br><br>';
 	drawCube(cube.getGridCube());
 };
 

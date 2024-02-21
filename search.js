@@ -1,11 +1,9 @@
 const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
-	let visited = [];
-	let fringe = [];
-
+	let fringe = new MinHeap();
 	let nodesExpanded = 0;
 
 	// format: [ state , path to state ]
-	fringe.push([initState, []]);
+	fringe.push([heuristic(initState), initState, []]);
 
 	while (fringe.length > 0) {
 		// gets next node
@@ -13,22 +11,8 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 		++nodesExpanded;
 
 		// copies faces and path
-		let faces = Cube.copyFaces(node[0]),
-			path = node[1]; // NOT A COPY
-
-		// makes sure state wasnt visited
-		/*
-		let cont = true;
-		for (let i = 0; i < visited.length; i++) {
-			if (Cube.equals(visited[i], faces)) {
-				cont = false;
-				break;
-			}
-		}
-		if (!cont) continue;*/
-
-		// adds state to visited states
-		visited.push(faces);
+		let faces = Cube.copyFaces(node[1]),
+			path = node[2];
 
 		// checks if that node is the solved state
 		if (Cube.isSolved(faces)) {
@@ -36,14 +20,11 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 			return path.join(' ');
 		} else {
 			let successors = getSuccessors(faces, path[path.length - 1]);
-			/*successors = successors.filter(el => {
-				for (let visitedFace of visited) !Cube.equals(visitedFace, el);
-			})*/
 
 			for (let i = 0; i < successors.length; i++) {
 				let newPath = [...path];
 				newPath.push(successors[i][1]);
-				fringe.push([successors[i][0], newPath]);
+				fringe.push([heuristic(successors[i][0]) + newPath.length, successors[i][0], newPath]);
 			}
 		}
 	}
@@ -62,6 +43,14 @@ const getSuccessors = (faces, lastMove) => {
 	return successors;
 };
 
+const randomHeuristic = state => {
+	return Math.floor(Math.random() * 4);
+};
+
 const nullHeuristic = state => {
+	return 0;
+};
+
+const notConnectedHeuristic = state => {
 	return 0;
 };

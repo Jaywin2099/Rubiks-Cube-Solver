@@ -68,10 +68,16 @@ class Cube {
 	}
 
 	scramble(numMoves = 21) {
+		let moves = [];
+
 		// picks numMoves random moves and takes them
 		for (let i = 0; i < numMoves; i++) {
-			this.takeRandomMove();
+			moves.push(this.generateRandomMove().toUpperCase());
+
+			this.move(moves[i]);
 		}
+
+		return moves;
 	}
 
 	solve() {
@@ -247,10 +253,6 @@ class Cube {
 
 	generateRandomMove() {
 		return Cube.MOVES[Math.floor(Math.random() * Cube.MOVES.length)];
-	}
-
-	takeRandomMove() {
-		this.move(this.generateRandomMove());
 	}
 
 	static equals(faces1, faces2) {

@@ -15,7 +15,7 @@ class CircularArray {
 		newCircular.startIndex = this.startIndex;
 
 		// clean deep copy's data
-		newCircular.data = [...this.data]
+		newCircular.data = [...this.data];
 
 		return newCircular;
 	}
@@ -49,7 +49,7 @@ class CircularArray {
 }
 class Cube {
 	static MOVES = ['u', 'f', 'r', 'b', 'l', 'd', 'u2', 'f2', 'r2', 'b2', 'l2', 'd2', "u'", "f'", "r'", "b'", "l'", "d'"];
-	
+
 	// make object with descriptive names
 	static orientations = [
 		{ order: [0, 1, 2, 3, 4], startIndex: [0, 0, 0, 0, 0] }, // 0 = u
@@ -57,24 +57,52 @@ class Cube {
 		{ order: [2, 1, 5, 3, 0], startIndex: [2, 2, 2, 6, 2] }, // 2 = r
 		{ order: [3, 0, 2, 5, 4], startIndex: [4, 0, 2, 4, 6] }, // 3 = b
 		{ order: [4, 0, 3, 5, 1], startIndex: [4, 6, 2, 6, 6] }, // 4 = l
-		{ order: [5, 4, 3, 2, 1], startIndex: [2, 4, 4, 4, 4] } // 5 = d
+		{ order: [5, 4, 3, 2, 1], startIndex: [2, 4, 4, 4, 4] }, // 5 = d
+		{ order: [2, 5, 3, 0, 1], startIndex: [0, 2, 6, 2, 2] }, // wgr corner
+		{ order: [3, 4, 0, 2, 5], startIndex: [6, 6, 0, 2, 6] } // rby corner
 	];
 
 	constructor() {
 		this.nextMoves = [];
 		this.numMovesTaken = 0;
 
-		this.solve();		
+		this.solve();
+	}
+
+	static getNumConnected(faces) {
+		let connected = 0;
+
+		// loops through each corner
+		for (let { order, startIndex } of this.orientations) {
+			// compares the three corner colors to the 3 connected edges
+			let top = faces[order[0]].get(startIndex[0]),
+				back = faces[order[3]].get(startIndex[3] + 2),
+				left = faces[order[4]].get(startIndex[4]);
+
+			if (top == faces[order[0]].get(startIndex[0] + 1) && back == faces[order[3]].get(startIndex[3] + 1)) ++connected;
+
+			if (top == faces[order[0]].get(startIndex[0] - 1) && left == faces[order[4]].get(startIndex[4] + 1)) ++connected;
+
+			if (back == faces[order[3]].get(startIndex[3] + 3) && left == faces[order[4]].get(startIndex[4] - 1)) ++connected;
+		}
+
+		return connected;
+	}
+
+	getNumConnected() {
+		return Cube.getNumConnected(this.faces);
 	}
 
 	scramble(numMoves = 21) {
-		let moves = [];
+		let moves = "";
 
 		// picks numMoves random moves and takes them
 		for (let i = 0; i < numMoves; i++) {
-			moves.push(this.generateRandomMove().toUpperCase());
+			let move = this.generateRandomMove();
 
-			this.move(moves[i]);
+			moves += move.toUpperCase() + ", ";
+
+			this.move(move);
 		}
 
 		return moves;
@@ -97,13 +125,18 @@ class Cube {
 	}
 
 	flush() {
-		while(this.nextMoves.length > 0) {
+		while (this.nextMoves.length > 0) {
 			this.numMovesTaken++;
 			this.move(this.nextMoves.shift());
 		}
 	}
 
-	addMoves(moves, flush=false) {
+	clear() {
+		this.numMovesTaken = 0;
+		this.nextMoves = [];
+	}
+
+	addMoves(moves, flush = false) {
 		this.nextMoves.push(...moves.split(' '));
 
 		if (flush) this.flush();
@@ -200,7 +233,7 @@ class Cube {
 	 * takes a move (u,f,r,l,d,b), orients the main cube so that the
 	 * desired side is on the top, then does a U or U'
 	 */
-	static move(movement, faces, returnCopy=true) {
+	static move(movement, faces, returnCopy = true) {
 		// copies faces
 		if (returnCopy) faces = Cube.copyFaces(faces);
 
@@ -256,10 +289,10 @@ class Cube {
 	}
 
 	static equals(faces1, faces2) {
-		// makes sure they are valid cubes 
+		// makes sure they are valid cubes
 		if (faces1[0].length != faces2[0].length) return false;
 
-		// compares each face for each cube 
+		// compares each face for each cube
 		for (let i = 0; i < 6; i++) {
 			for (let j = 0; j < faces1[i].length; j++) {
 				if (faces1[i].get(j) != faces2[i].get(j)) return false;

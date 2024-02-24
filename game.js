@@ -5,13 +5,13 @@ drawCube(cube.getGridCube());
 //form on submit
 const onSolve = e => {
 	if (e) e.preventDefault();
-	
+	cube.clear();
 	drawCube(cube.getGridCube());
 
 	let path = 0;
 	let startTime = Date.now();
 
-	if (type.value == 'bfs') path = breadthFirstSearch(cube.faces);
+	if (type.value == 'bfs') path = breadthFirstSearch(cube.faces, notConnectedHeuristic);
 
 	let elapsedTime = (Date.now() - startTime) / 1000;
 
@@ -19,22 +19,17 @@ const onSolve = e => {
 
 	if (path) {
 		cube.addMoves(path);
-
 		solveInfo.innerHTML += '<br><br>path: ' + path.toUpperCase();
 
 		INTERVAL = setInterval(() => {
 			// steps
-			cube.step();
-
-			// draws cube
-			drawCube(cube.getGridCube());
+			onStep();
 
 			// when cube is solved
 			if (cube.isSolved()) onPause();
 		}, tickTime.value);
-	} else {
+	} else
 		console.log('no path');
-	}
 };
 
 const onPause = () => {
@@ -49,7 +44,7 @@ const onStep = () => {
 const onScramble = () => {
 	cube.solve();
 	let scramble = cube.scramble(parseInt(scrambleDepth.value));
-	solveInfo.innerHTML = 'scramble: ' + scramble + '<br><br>';
+	solveInfo.innerHTML = '<p>scramble: ' + scramble + '<br><br></p>';
 	drawCube(cube.getGridCube());
 };
 

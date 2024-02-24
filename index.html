@@ -8,30 +8,33 @@
 	</head>
 	<body>
 		<div id="wrapper">
-			<!-- form containter -->
-			<div id="dataContainer">
+			<div id="sidebar">
 				<h2>Rubiks cube solver</h2>
 
-				<form id="dataForm" method="post">
-					<label for="type">Type:</label>
-					<select id="type" name="type">
-						<option value="bfs" selected>breadth first search</option>
-					</select>
-					<label for="scrambleDepth">Scramble Depth:</label>
-					<input id="scrambleDepth" name="scrambleDepth" type="number" value="4" min="1" max="25"/>
+				<!-- form containter -->
+				<div id="dataContainer">
+					<form id="dataForm" method="post">
+						<label for="type">Type:</label>
+						<select id="type" name="type">
+							<option value="bfs" selected>breadth first search</option>
+						</select>
+						<label for="scrambleDepth">Scramble Depth:</label>
+						<input id="scrambleDepth" name="scrambleDepth" type="number" value="8" min="1" />
 
-					<label for="tickTime">Tick (ms):</label>
-					<input id="tickTime" name="tickTime" type="number" value="500" min="1" />
+						<label for="tickTime">Tick (ms):</label>
+						<input id="tickTime" name="tickTime" type="number" value="500" min="1" />
 
-					<button type="submit" id="dataSubmit">Solve</button>
-				</form>
-				<div id="otherDataButtons">
-					<button id="pause">Pause</button>
-					<button id='step'>Step</button>
-					<button id='scramble'>Scramble</button>
+						<button type="submit" id="dataSubmit">Solve</button>
+					</form>
+
+					<div id="otherDataButtons">
+						<button id="pause">Pause</button>
+						<button id="step">Step</button>
+						<button id="scramble">Scramble</button>
+					</div>
 				</div>
 
-				<div id='solveInfo'></div>
+				<div id="solveInfo"></div>
 			</div>
 
 			<!-- canvas container-->
@@ -39,7 +42,8 @@
 				<canvas id="myCanvas"></canvas>
 			</div>
 		</div>
-		<script src='./MinHeap.js'></script>
+
+		<script src="./MinHeap.js"></script>
 		<script src="./index.js"></script>
 		<script src="./search.js"></script>
 		<script src="./cube.js"></script>

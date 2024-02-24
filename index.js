@@ -2,11 +2,11 @@ var INTERVAL;
 var dataForm = document.getElementById('dataForm');
 var type = document.getElementById('type');
 var tickTime = document.getElementById('tickTime');
-var pauseButton = document.getElementById("pause");
-var stepButton = document.getElementById("step");
-var scrambleDepth = document.getElementById("scrambleDepth");
-var scrambleButton = document.getElementById("scramble");
-var solveInfo = document.getElementById("solveInfo");
+var pauseButton = document.getElementById('pause');
+var stepButton = document.getElementById('step');
+var scrambleDepth = document.getElementById('scrambleDepth');
+var scrambleButton = document.getElementById('scramble');
+var solveInfo = document.getElementById('solveInfo');
 
 //initializes global elements
 var stage = document.getElementById('stage');
@@ -19,9 +19,9 @@ canvas.setAttribute('height', stage.clientHeight);
 
 // constants
 const colors = ['#fefefe', '#a3fea3', '#fea3a3', '#a3a3fe', '#ffcf93', '#fefea3'];
-const WIDTH = (canvas.width * 0.6) / 12;
+const WIDTH = (canvas.width * 0.8) / 12;
 const CORNER = {
-	x: canvas.width * 0.05,
+	x: canvas.width * 0.1,
 	y: canvas.height * 0.4
 };
 const drawCube = grid => {

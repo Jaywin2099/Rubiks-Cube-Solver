@@ -1,7 +1,6 @@
 const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 	let fringe = new MinHeap();
 	let nodesExpanded = 0;
-	let visited = [];
 
 	// format: [ state , path to state ]
 	fringe.push([heuristic(initState), initState, []]);
@@ -10,8 +9,6 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 		// gets next node
 		let node = fringe.shift();
 		++nodesExpanded;
-
-		console.log(node[0]);
 
 		// copies faces and path
 		let faces = Cube.copyFaces(node[1]),
@@ -60,5 +57,5 @@ const notConnectedHeuristic = state => {
 	// gets number of connections and subtracts from total
 	notConnected -= Cube.getNumConnected(state);
 
-	return notConnected / 4 ;
+	return notConnected / 4;
 };

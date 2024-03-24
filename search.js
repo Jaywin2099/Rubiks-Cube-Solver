@@ -1,6 +1,6 @@
 const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 	let fringe = new MinHeap();
-	let nodesExpanded = 0;
+	nodesExpanded = 0;
 	//let visited = [];
 
 	// format: [ state , path to state ]
@@ -72,10 +72,12 @@ const manhattanDistanceHeuristic = state => {
 	// calculates the manhattan distance of every piece
 	// from its solved position, and divides by 4? 8?
 	// to keep the heuristic admissible.
-
-
 };
 
-const numCornersSolvedHeuristic  = state => {
+const numCornerMovesHeuristic = state => {
 	return Cube.estimateMovesToSolveCorners(state) / 4;
 };
+
+window['notConnectedHeuristic'] = notConnectedHeuristic;
+window['numCornerMovesHeuristic'] = numCornerMovesHeuristic;
+window['nullHeuristic'] = nullHeuristic;

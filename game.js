@@ -11,11 +11,17 @@ const onSolve = e => {
 	let path = 0;
 	let startTime = Date.now();
 
-	if (type.value == 'bfs') path = breadthFirstSearch(cube.faces, notConnectedHeuristic);
+	if (type.value == 'bfs') path = breadthFirstSearch(cube.faces, window[heur.value]);
 
 	let elapsedTime = (Date.now() - startTime) / 1000;
 
-	solveInfo.innerHTML += elapsedTime.toString() + ' seconds to find solution';
+	solveInfo.innerHTML +=
+		elapsedTime.toString() +
+		' seconds to find solution ' +
+		'<br>nodes searched/sec: ' +
+		Math.round(nodesExpanded / elapsedTime.toString()) +
+		'<br>nodes searched/moves: ' +
+		Math.round(nodesExpanded / path.split(' ').length);
 
 	if (path) {
 		cube.addMoves(path);
@@ -28,8 +34,7 @@ const onSolve = e => {
 			// when cube is solved
 			if (cube.isSolved()) onPause();
 		}, tickTime.value);
-	} else
-		console.log('no path');
+	} else console.log('no path');
 };
 
 const onPause = () => {

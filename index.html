@@ -18,6 +18,12 @@
 						<select id="type" name="type">
 							<option value="bfs" selected>breadth first search</option>
 						</select>
+						<label for="heuristic">Heuristic:</label>
+						<select id="heuristic" name="heuristic">
+							<option value="nullHeuristic">null</option>
+							<option value="notConnectedHeuristic" selected>not connected</option>
+							<option value="numCornerMovesHeuristic">corner moves</option>
+						</select>
 						<label for="scrambleDepth">Scramble Depth:</label>
 						<input id="scrambleDepth" name="scrambleDepth" type="number" value="7" min="1" />
 

@@ -1,6 +1,7 @@
-var INTERVAL;
+var INTERVAL, nodesExpanded;
 var dataForm = document.getElementById('dataForm');
 var type = document.getElementById('type');
+var heur = document.getElementById('heuristic');
 var tickTime = document.getElementById('tickTime');
 var pauseButton = document.getElementById('pause');
 var stepButton = document.getElementById('step');

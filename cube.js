@@ -94,18 +94,21 @@ class Cube {
 	}
 
 	scramble(numMoves = 21) {
-		let moves = '';
+		let moves = [];
 
 		// picks numMoves random moves and takes them
 		for (let i = 0; i < numMoves; i++) {
-			let move = this.generateRandomMove();
+			let move;
+			do {
+				move = this.generateRandomMove();
+			}
+			while (moves.length > 0 && move[0].toUpperCase() == moves[moves.length - 1][0])
 
-			moves += move.toUpperCase() + ', ';
-
+			moves.push(move.toUpperCase());
 			this.move(move);
 		}
 
-		return moves;
+		return moves.join(', ');
 	}
 
 	solve() {
@@ -303,7 +306,7 @@ class Cube {
 		return true;
 	}
 
-	static numMovesToSolveCorners(faces) {
+	static estimateMovesToSolveCorners(faces) {
 		let totalNumMoves = 0;
 
 		// loops through each corner
@@ -315,26 +318,20 @@ class Cube {
 		for (let { order, startIndex } of this.orientations) {
 			let numMoves = 2;
 
-			// gets the three stickers of a corner
-			let top = faces[order[0]].get(startIndex[0]),
-				back = faces[order[3]].get(startIndex[3] + 2),
-				left = faces[order[4]].get(startIndex[4]);
-
 			// checks if each sticker matches their respective centers
-			if (top == order[0])
+			if (faces[order[0]].get(startIndex[0]) == order[0])
 				--numMoves;
 
-			if (back == order[3])
+			if (faces[order[3]].get(startIndex[3] + 2) == order[3])
 				--numMoves;
 
-			if (numMoves > 0 && left == order[4])
+			if (numMoves > 0 && faces[order[4]].get(startIndex[4]) == order[4])
 				--numMoves;
 
 			// adds to total
 			totalNumMoves += numMoves
 		}
 
-		// divides by 4 because one movement screws up 4 corners
-		return totalNumMoves / 4;
+		return totalNumMoves;
 	}
 }

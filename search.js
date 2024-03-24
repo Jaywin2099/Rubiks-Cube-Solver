@@ -18,6 +18,7 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 		// checks if that node is the solved state
 		if (Cube.isSolved(faces)) {
 			solveInfo.innerHTML = 'nodes expanded: ' + nodesExpanded.toString() + '<br>';
+
 			return path.join(' ');
 		} else {
 			let successors = getSuccessors(faces, path[path.length - 1]);
@@ -39,7 +40,6 @@ const getSuccessors = (faces, lastMove) => {
 	if (typeof lastMove != 'undefined') {
 		// removes the opposite of the move just made from possible next movements
 		moves = Cube.MOVES.filter(e => !e.includes(lastMove[0]));
-		moves.push(lastMove);
 	} else {
 		moves = Cube.MOVES;
 	}
@@ -77,5 +77,5 @@ const manhattanDistanceHeuristic = state => {
 };
 
 const numCornersSolvedHeuristic  = state => {
-	return Cube.numMovesToSolveCorners(state);
+	return Cube.estimateMovesToSolveCorners(state) / 4;
 };

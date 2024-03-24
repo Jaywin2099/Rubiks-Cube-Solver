@@ -47,6 +47,7 @@ class CircularArray {
 		return this.data.push(data);
 	}
 }
+
 class Cube {
 	static MOVES = ['u', 'f', 'r', 'b', 'l', 'd', 'u2', 'f2', 'r2', 'b2', 'l2', 'd2', "u'", "f'", "r'", "b'", "l'", "d'"];
 
@@ -65,7 +66,6 @@ class Cube {
 	constructor() {
 		this.nextMoves = [];
 		this.numMovesTaken = 0;
-
 		this.solve();
 	}
 
@@ -94,13 +94,13 @@ class Cube {
 	}
 
 	scramble(numMoves = 21) {
-		let moves = "";
+		let moves = '';
 
 		// picks numMoves random moves and takes them
 		for (let i = 0; i < numMoves; i++) {
 			let move = this.generateRandomMove();
 
-			moves += move.toUpperCase() + ", ";
+			moves += move.toUpperCase() + ', ';
 
 			this.move(move);
 		}
@@ -234,13 +234,14 @@ class Cube {
 	 * desired side is on the top, then does a U or U'
 	 */
 	static move(movement, faces, returnCopy = true) {
-		// copies faces
+		// deep copy's faces before movement
 		if (returnCopy) faces = Cube.copyFaces(faces);
 
 		let orientation = Cube.MOVES.indexOf(movement[0].toLowerCase());
 
 		if (orientation > 5 || orientation < 0) throw RangeError('Orientation out of range.');
 
+		// moves either 90, -90, or 180 degrees depending on move
 		if (movement.includes("'")) {
 			return Cube.Uprime(orientation, faces);
 		} else if (movement.includes('2')) {
@@ -257,7 +258,7 @@ class Cube {
 	getGridCube() {
 		let faces = [];
 
-		// this is shit
+		// this is sheeeeeit
 		for (let i = 0; i < 6; i++) {
 			faces.push([
 				[this.faces[i].get(0), this.faces[i].get(1), this.faces[i].get(2)],
@@ -269,13 +270,13 @@ class Cube {
 		return faces;
 	}
 
+	/**
+	 * since the index of the face is the center, this alg checks if the color of each piece is the same as the index for every face
+	 *
+	 * @returns a boolean as soon as it encounters a piece that isn't the same as the "center". it performs well with less solved cubes.
+	 */
 	static isSolved(faces) {
-		for (let i = 0; i < 48; i++) {
-			let face = Math.floor(i / 8);
-
-			// checks if the color of each piece is the same as the "center" for every face
-			if (faces[face].get(i % 8) != face) return false;
-		}
+		for (let face = 0; face < 6; ++face) for (let i = 0; i < 8; ++i) if (faces[face].get(i) != face) return false;
 
 		return true;
 	}
@@ -300,5 +301,40 @@ class Cube {
 		}
 
 		return true;
+	}
+
+	static numMovesToSolveCorners(faces) {
+		let totalNumMoves = 0;
+
+		// loops through each corner
+		// since no corner is further than 2 moves away from being solved,
+		// all im doing is checking the number of stickers on a corner
+		// that don't match their center. that number directly correlates to 
+		// the number of moves needed to solve the corner.
+		// (also keep in mind that if two stickers match their centers, then the corner is already solved)
+		for (let { order, startIndex } of this.orientations) {
+			let numMoves = 2;
+
+			// gets the three stickers of a corner
+			let top = faces[order[0]].get(startIndex[0]),
+				back = faces[order[3]].get(startIndex[3] + 2),
+				left = faces[order[4]].get(startIndex[4]);
+
+			// checks if each sticker matches their respective centers
+			if (top == order[0])
+				--numMoves;
+
+			if (back == order[3])
+				--numMoves;
+
+			if (numMoves > 0 && left == order[4])
+				--numMoves;
+
+			// adds to total
+			totalNumMoves += numMoves
+		}
+
+		// divides by 4 because one movement screws up 4 corners
+		return totalNumMoves / 4;
 	}
 }

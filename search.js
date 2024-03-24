@@ -11,16 +11,6 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 		let node = fringe.shift();
 		++nodesExpanded;
 
-		/*
-		if (visited.indexOf(node[1]) != -1) {
-			console.log('it did something');
-			continue;
-		}
-		visited.push(node[1]);
-
-		// 		successors.filter(s => visited.includes(s) != -1);
-		*/
-
 		// copies faces and path
 		let faces = Cube.copyFaces(node[1]),
 			path = node[2];
@@ -35,6 +25,7 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 			for (let i = 0; i < successors.length; i++) {
 				let newPath = [...path];
 				newPath.push(successors[i][1]);
+
 				fringe.push([heuristic(successors[i][0]) + newPath.length, successors[i][0], newPath]);
 			}
 		}
@@ -42,10 +33,20 @@ const breadthFirstSearch = (initState, heuristic = nullHeuristic) => {
 };
 
 const getSuccessors = (faces, lastMove) => {
-	lastMove = typeof lastMove == 'undefined' ? '-' : lastMove[0];
-	let moves = Cube.MOVES.filter(e => !e.includes(lastMove));
+	let moves;
+
+	// checks if there is a last movement
+	if (typeof lastMove != 'undefined') {
+		// removes the opposite of the move just made from possible next movements
+		moves = Cube.MOVES.filter(e => !e.includes(lastMove[0]));
+		moves.push(lastMove);
+	} else {
+		moves = Cube.MOVES;
+	}
+
 	let successors = [];
 
+	// gets successor states
 	for (let i = 0; i < moves.length; i++) {
 		// Cube.move returns a copy of the state after acting on the move
 		successors.push([Cube.move(moves[i], faces), moves[i]]);
@@ -63,10 +64,18 @@ const nullHeuristic = state => {
 };
 
 const notConnectedHeuristic = state => {
-	let notConnected = 8 * 3; // 8 corners, three connections per corner
-
 	// gets number of connections and subtracts from total
-	notConnected -= Cube.getNumConnected(state);
+	return 4 - Cube.getNumConnected(state) / 6;
+};
 
-	return notConnected / 3.8;
+const manhattanDistanceHeuristic = state => {
+	// calculates the manhattan distance of every piece
+	// from its solved position, and divides by 4? 8?
+	// to keep the heuristic admissible.
+
+
+};
+
+const numCornersSolvedHeuristic  = state => {
+	return Cube.numMovesToSolveCorners(state);
 };
